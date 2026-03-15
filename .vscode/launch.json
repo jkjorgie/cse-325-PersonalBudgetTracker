@@ -1,0 +1,11 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch PersonalBudgetTracker",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/PersonalBudgetTracker.csproj"
+        }
+    ]
+}
