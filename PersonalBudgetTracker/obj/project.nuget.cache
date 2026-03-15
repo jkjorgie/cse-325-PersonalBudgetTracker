@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "mkDaqxzskFc=",
+  "success": true,
+  "projectFilePath": "/Users/jayjorgensen/Library/CloudStorage/OneDrive-Personal/School/2026.2 - Winter/cse325/cse-325-PersonalBudgetTracker/PersonalBudgetTracker/PersonalBudgetTracker.csproj",
+  "expectedPackageFiles": [
+    "/Users/jayjorgensen/.nuget/packages/microsoft.aspnetcore.app.internal.assets/10.0.3/microsoft.aspnetcore.app.internal.assets.10.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}
