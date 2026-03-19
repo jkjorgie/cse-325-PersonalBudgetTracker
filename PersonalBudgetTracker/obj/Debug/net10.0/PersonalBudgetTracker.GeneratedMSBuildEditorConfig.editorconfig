@@ -1,14 +1,22 @@
 is_global = true
 build_property.TargetFramework = net10.0
-build_property.TargetFrameworkIdentifier = .NETCoreApp
-build_property.TargetFrameworkVersion = v10.0
+build_property.TargetFramework = net10.0
+build_property.TargetPlatformMinVersion = 
 build_property.TargetPlatformMinVersion = 
 build_property.UsingMicrosoftNETSdkWeb = true
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
 build_property.ProjectTypeGuids = 
 build_property.InvariantGlobalization = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
 build_property.PlatformNeutralAssembly = 
 build_property.EnforceExtendedAnalyzerRules = 
+build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.TargetFrameworkIdentifier = .NETCoreApp
+build_property.TargetFrameworkVersion = v10.0
 build_property.RootNamespace = PersonalBudgetTracker
 build_property.RootNamespace = PersonalBudgetTracker
 build_property.ProjectDir = /Users/jayjorgensen/Library/CloudStorage/OneDrive-Personal/School/2026.2 - Winter/cse325/cse-325-PersonalBudgetTracker/PersonalBudgetTracker/
@@ -24,6 +32,14 @@ build_property.EnableCodeStyleSeverity =
 
 [/Users/jayjorgensen/Library/CloudStorage/OneDrive-Personal/School/2026.2 - Winter/cse325/cse-325-PersonalBudgetTracker/PersonalBudgetTracker/Components/App.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9BcHAucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/jayjorgensen/Library/CloudStorage/OneDrive-Personal/School/2026.2 - Winter/cse325/cse-325-PersonalBudgetTracker/PersonalBudgetTracker/Components/Pages/Account/Login.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9BY2NvdW50L0xvZ2luLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/jayjorgensen/Library/CloudStorage/OneDrive-Personal/School/2026.2 - Winter/cse325/cse-325-PersonalBudgetTracker/PersonalBudgetTracker/Components/Pages/Account/Register.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9BY2NvdW50L1JlZ2lzdGVyLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [/Users/jayjorgensen/Library/CloudStorage/OneDrive-Personal/School/2026.2 - Winter/cse325/cse-325-PersonalBudgetTracker/PersonalBudgetTracker/Components/Pages/Counter.razor]
