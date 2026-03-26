@@ -1,3 +1,6 @@
 {
-  "dotnet.defaultSolution": "PersonalBudgetTracker.sln"
+  "dotnet.defaultSolution": "PersonalBudgetTracker.sln",
+  "appService.preDeployTask": "publish-release",
+  "appService.deploySubpath": "PersonalBudgetTracker/bin/Release/net10.0/publish",
+  "appService.defaultWebAppToDeploy": "/subscriptions/e1009a4e-25b4-4fce-9110-39643f87d192/resourceGroups/cse325-eastus2/providers/Microsoft.Web/sites/PersonalBudgetTracker"
 }
