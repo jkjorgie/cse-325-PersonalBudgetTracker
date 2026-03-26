@@ -27,4 +27,6 @@ public class Transaction
 
     [Required]
     public DateTime Date { get; set; } = DateTime.Today;
+
+    
 }
