@@ -1,9 +1,4 @@
 @page "/account/register"
-@using System.ComponentModel.DataAnnotations
-@using Microsoft.AspNetCore.Identity
-@inject UserManager<ApplicationUser> UserManager
-@inject SignInManager<ApplicationUser> SignInManager
-@inject NavigationManager Navigation
 
 <PageTitle>Register</PageTitle>
 
@@ -11,34 +6,24 @@
     <div class="col-md-4">
         <h2 class="mb-4">Create Account</h2>
 
-        @if (ErrorMessage is not null)
+        @if (error is not null)
         {
-            <div class="alert alert-danger">@ErrorMessage</div>
+            <div class="alert alert-danger">@Uri.UnescapeDataString(error)</div>
         }
 
-        <EditForm Model="Input" method="post" OnValidSubmit="RegisterUser" FormName="register">
-            <DataAnnotationsValidator />
-
+        <form method="post" action="/account/register-post">
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
-                <InputText id="email" @bind-Value="Input.Email" class="form-control" autocomplete="email" />
-                <ValidationMessage For="() => Input.Email" class="text-danger" />
+                <input id="email" name="email" type="email" class="form-control" autocomplete="email" required />
             </div>
 
             <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
-                <InputText id="password" type="password" @bind-Value="Input.Password" class="form-control" autocomplete="new-password" />
-                <ValidationMessage For="() => Input.Password" class="text-danger" />
-            </div>
-
-            <div class="mb-3">
-                <label for="confirm-password" class="form-label">Confirm Password</label>
-                <InputText id="confirm-password" type="password" @bind-Value="Input.ConfirmPassword" class="form-control" autocomplete="new-password" />
-                <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
+                <input id="password" name="password" type="password" class="form-control" autocomplete="new-password" required minlength="6" />
             </div>
 
             <button type="submit" class="btn btn-primary w-100">Register</button>
-        </EditForm>
+        </form>
 
         <p class="mt-3 text-center">
             Already have an account? <a href="/account/login">Login</a>
@@ -47,36 +32,6 @@
 </div>
 
 @code {
-    [SupplyParameterFromForm]
-    private RegisterInput Input { get; set; } = new();
-
-    private string? ErrorMessage;
-
-    private async Task RegisterUser()
-    {
-        var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email };
-        var result = await UserManager.CreateAsync(user, Input.Password);
-
-        if (result.Succeeded)
-        {
-            await SignInManager.SignInAsync(user, isPersistent: false);
-            Navigation.NavigateTo("/", forceLoad: true);
-        }
-        else
-        {
-            ErrorMessage = string.Join(" ", result.Errors.Select(e => e.Description));
-        }
-    }
-
-    private sealed class RegisterInput
-    {
-        [Required, EmailAddress]
-        public string Email { get; set; } = "";
-
-        [Required, MinLength(6)]
-        public string Password { get; set; } = "";
-
-        [Required, Compare(nameof(Password), ErrorMessage = "Passwords do not match.")]
-        public string ConfirmPassword { get; set; } = "";
-    }
+    [SupplyParameterFromQuery]
+    private string? error { get; set; }
 }
