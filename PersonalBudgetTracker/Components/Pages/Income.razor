@@ -1,0 +1,184 @@
+@page "/income"
+@using PersonalBudgetTracker.Models
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@inject ApplicationDbContext Db
+@attribute [Authorize]
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthStateProvider
+@using System.Linq
+@using Microsoft.EntityFrameworkCore
+
+<h3>Income</h3>
+
+<!-- FORM -->
+<div>
+    <EditForm Model="newTransaction" OnValidSubmit="AddIncome" FormName="IncomeForm">
+        @* <DataAnnotationsValidator />
+        <ValidationSummary /> *@
+
+        <div>
+            <label>Amount:</label>
+            <InputNumber @bind-Value="newTransaction.Amount" />
+        </div>
+
+        <div>
+            <label>Category:</label>
+            <InputSelect @bind-Value="newTransaction.Category">
+                @foreach (var cat in IncomeCategories.All)
+                {
+                    <option value="@cat">@cat</option>
+                }
+            </InputSelect>
+        </div>
+
+        <div>
+            <label>Description:</label>
+            <InputText @bind-Value="newTransaction.Description" />
+        </div>
+
+        <button type="submit">Add Income</button>
+    </EditForm>
+</div>
+
+<hr />
+
+<!-- LIST (completely outside form) -->
+<div>
+    <h4>Your Income</h4>
+
+    @if (!incomes.Any())
+    {
+        <p>No income yet.</p>
+    }
+    else
+    {
+        <ul>
+            @foreach (var item in incomes)
+            {
+                <li>
+                    @if (editingTransaction?.TransactionId == item.TransactionId)
+                    {
+                        <InputNumber @bind-Value="item.Amount" />
+
+                        <InputSelect @bind-Value="item.Category">
+                            @foreach (var cat in IncomeCategories.All)
+                            {
+                                <option value="@cat">@cat</option>
+                            }
+                        </InputSelect>
+
+                        <InputText @bind-Value="item.Description" />
+
+                        <button type="button" @onclick="() => SaveEdit(item)">Save</button>
+                        <button type="button" @onclick="CancelEdit">Cancel</button>
+                    }
+                    else
+                    {
+                        <span>
+                            @item.Date.ToShortDateString() -
+                            ₱@item.Amount -
+                            @item.Category
+                        </span>
+
+                        <button type="button" @onclick="() => StartEdit(item)">Edit</button>
+                        <button type="button" @onclick="() => DeleteIncome(item.TransactionId)">Delete</button>
+                    }
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+
+    private Transaction newTransaction = new()
+    {
+        Date = DateTime.Today,
+        Type = TransactionType.Income,
+        Category = IncomeCategories.All[0]
+    };
+
+    private List<Transaction> incomes = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadIncome();
+    }
+
+    private async Task LoadIncome()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = await UserManager.GetUserAsync(authState.User);
+
+        if (user != null)
+        {
+            incomes = await Db.Transactions
+                .Where(t => t.UserId == user.Id && t.Type == TransactionType.Income)
+                .OrderByDescending(t => t.Date)
+                .ToListAsync();
+        }
+    }
+
+    private async Task AddIncome()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = await UserManager.GetUserAsync(authState.User);
+
+        if (user == null) return;
+
+        newTransaction.UserId = user.Id;
+        newTransaction.Type = TransactionType.Income;
+
+        Db.Transactions.Add(newTransaction);
+        await Db.SaveChangesAsync();
+
+        newTransaction = new Transaction
+        {
+            Date = DateTime.Today,
+            Type = TransactionType.Income,
+            Category = IncomeCategories.All[0]
+        };
+
+        await LoadIncome();
+    }
+
+    private Transaction? editingTransaction = null;
+
+    private void StartEdit(Transaction transaction)
+    {
+        editingTransaction = transaction;
+        StateHasChanged();
+    }
+
+    private void CancelEdit()
+    {
+        editingTransaction = null;
+    }
+
+    private async Task SaveEdit(Transaction transaction)
+    {
+        Db.Transactions.Update(transaction);
+        await Db.SaveChangesAsync();
+
+        editingTransaction = null;
+
+        await LoadIncome();
+        StateHasChanged();
+    }
+
+    private async Task DeleteIncome(int id)
+    {
+        var transaction = await Db.Transactions
+            .FirstOrDefaultAsync(t => t.TransactionId == id);
+
+        if (transaction != null)
+        {
+            Db.Transactions.Remove(transaction);
+            await Db.SaveChangesAsync();
+
+            await LoadIncome();
+            StateHasChanged();
+        }
+    }
+}
