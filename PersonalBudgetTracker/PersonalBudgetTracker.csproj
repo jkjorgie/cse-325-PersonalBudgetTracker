@@ -5,6 +5,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
+    <AllowMissingPrunePackageData>true</AllowMissingPrunePackageData>
+    <RuntimeFrameworkVersion>10.0.5</RuntimeFrameworkVersion>
   </PropertyGroup>
 
   <ItemGroup>
