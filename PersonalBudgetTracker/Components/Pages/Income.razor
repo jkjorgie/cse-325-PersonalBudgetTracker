@@ -1,0 +1,288 @@
+@page "/income"
+@rendermode InteractiveServer
+@using PersonalBudgetTracker.Models
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.EntityFrameworkCore
+@using System.Linq
+@using System.Security.Claims
+@inject AuthenticationStateProvider AuthStateProvider
+@inject ApplicationDbContext Db
+@inject IJSRuntime JS
+@attribute [Authorize]
+
+<PageTitle>Income</PageTitle>
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">Income</h1>
+    <p class="text-muted">Record a new income entry below.</p>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <EditForm Model="newTransaction" OnValidSubmit="AddIncome" FormName="IncomeForm">
+                <DataAnnotationsValidator />
+                <ValidationSummary class="text-danger" />
+
+                <div class="mb-3">
+                    <label class="form-label">Category <span class="text-danger">*</span></label>
+                    <InputSelect @bind-Value="newTransaction.Category" class="form-select">
+                        @foreach (var cat in IncomeCategories.All)
+                        {
+                            <option value="@cat">@cat</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="() => newTransaction.Category" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Amount <span class="text-danger">*</span></label>
+                    <InputNumber @bind-Value="newTransaction.Amount" class="form-control" />
+                    <ValidationMessage For="() => newTransaction.Amount" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Date <span class="text-danger">*</span></label>
+                    <InputDate @bind-Value="newTransaction.Date" class="form-control" />
+                    <ValidationMessage For="() => newTransaction.Date" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <InputText @bind-Value="newTransaction.Description" class="form-control" />
+                </div>
+
+                <button type="submit" class="btn btn-primary">Add Income</button>
+            </EditForm>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="mb-0">Your Income</h4>
+        <div class="btn-group btn-group-sm" role="group">
+            <button type="button" class="btn @(viewMode == "card" ? "btn-primary" : "btn-outline-primary")"
+                    @onclick='() => viewMode = "card"'>
+                Cards
+            </button>
+            <button type="button" class="btn @(viewMode == "table" ? "btn-primary" : "btn-outline-primary")"
+                    @onclick='() => viewMode = "table"'>
+                Table
+            </button>
+        </div>
+    </div>
+
+    @if (!incomes.Any())
+    {
+        <p class="text-muted">No income recorded yet.</p>
+    }
+    else if (viewMode == "card")
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3 mb-4">
+            @foreach (var item in incomes)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        @if (editingTransaction?.TransactionId == item.TransactionId)
+                        {
+                            <div class="card-body">
+                                <div class="mb-2">
+                                    <label class="form-label small fw-semibold">Category</label>
+                                    <InputSelect @bind-Value="item.Category" class="form-select form-select-sm">
+                                        @foreach (var cat in IncomeCategories.All)
+                                        {
+                                            <option value="@cat">@cat</option>
+                                        }
+                                    </InputSelect>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small fw-semibold">Amount</label>
+                                    <InputNumber @bind-Value="item.Amount" class="form-control form-control-sm" />
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label small fw-semibold">Date</label>
+                                    <InputDate @bind-Value="item.Date" class="form-control form-control-sm" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small fw-semibold">Description</label>
+                                    <InputText @bind-Value="item.Description" class="form-control form-control-sm" />
+                                </div>
+                                <button class="btn btn-success btn-sm me-1" type="button" @onclick="() => SaveEdit(item)">Save</button>
+                                <button class="btn btn-secondary btn-sm" type="button" @onclick="CancelEdit">Cancel</button>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                    <span class="badge bg-secondary">@item.Category</span>
+                                    <span class="fw-bold text-success">₱@item.Amount.ToString("N2")</span>
+                                </div>
+                                <p class="card-text text-muted small mb-1">@item.Date.ToShortDateString()</p>
+                                @if (!string.IsNullOrEmpty(item.Description))
+                                {
+                                    <p class="card-text small">@item.Description</p>
+                                }
+                            </div>
+                            <div class="card-footer bg-transparent d-flex gap-2">
+                                <button class="btn btn-outline-primary btn-sm" type="button" @onclick="() => StartEdit(item)">Edit</button>
+                                <button class="btn btn-outline-danger btn-sm" type="button" @onclick="() => DeleteIncome(item.TransactionId)">Delete</button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive mb-4">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Amount</th>
+                        <th>Description</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in incomes)
+                    {
+                        <tr>
+                            @if (editingTransaction?.TransactionId == item.TransactionId)
+                            {
+                                <td><InputDate @bind-Value="item.Date" class="form-control form-control-sm" /></td>
+                                <td>
+                                    <InputSelect @bind-Value="item.Category" class="form-select form-select-sm">
+                                        @foreach (var cat in IncomeCategories.All)
+                                        {
+                                            <option value="@cat">@cat</option>
+                                        }
+                                    </InputSelect>
+                                </td>
+                                <td><InputNumber @bind-Value="item.Amount" class="form-control form-control-sm" /></td>
+                                <td><InputText @bind-Value="item.Description" class="form-control form-control-sm" /></td>
+                                <td>
+                                    <button class="btn btn-success btn-sm me-1" type="button" @onclick="() => SaveEdit(item)">Save</button>
+                                    <button class="btn btn-secondary btn-sm" type="button" @onclick="CancelEdit">Cancel</button>
+                                </td>
+                            }
+                            else
+                            {
+                                <td>@item.Date.ToShortDateString()</td>
+                                <td>@item.Category</td>
+                                <td class="text-success fw-bold">₱@item.Amount.ToString("N2")</td>
+                                <td>@item.Description</td>
+                                <td>
+                                    <button class="btn btn-outline-primary btn-sm me-1" type="button" @onclick="() => StartEdit(item)">Edit</button>
+                                    <button class="btn btn-outline-danger btn-sm" type="button" @onclick="() => DeleteIncome(item.TransactionId)">Delete</button>
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@code {
+
+    private Transaction newTransaction = new()
+    {
+        Date = DateTime.Today,
+        Type = TransactionType.Income,
+        Category = IncomeCategories.All[0]
+    };
+
+    private List<Transaction> incomes = new();
+    private Transaction? editingTransaction = null;
+    private string viewMode = "card";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var width = await JS.InvokeAsync<int>("eval", "window.innerWidth");
+            viewMode = width >= 768 ? "table" : "card";
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadIncome();
+    }
+
+    private async Task<string?> GetUserId()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        return authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    }
+
+    private async Task LoadIncome()
+    {
+        var userId = await GetUserId();
+        if (userId is null) return;
+
+        incomes = await Db.Transactions
+            .Where(t => t.UserId == userId && t.Type == TransactionType.Income)
+            .OrderByDescending(t => t.Date)
+            .ToListAsync();
+    }
+
+    private async Task AddIncome()
+    {
+        var userId = await GetUserId();
+        if (userId is null) return;
+
+        newTransaction.UserId = userId;
+        newTransaction.Type = TransactionType.Income;
+
+        Db.Transactions.Add(newTransaction);
+        await Db.SaveChangesAsync();
+
+        newTransaction = new Transaction
+        {
+            Date = DateTime.Today,
+            Type = TransactionType.Income,
+            Category = IncomeCategories.All[0]
+        };
+
+        await LoadIncome();
+    }
+
+    private void StartEdit(Transaction transaction)
+    {
+        editingTransaction = transaction;
+        StateHasChanged();
+    }
+
+    private void CancelEdit()
+    {
+        editingTransaction = null;
+    }
+
+    private async Task SaveEdit(Transaction transaction)
+    {
+        Db.Transactions.Update(transaction);
+        await Db.SaveChangesAsync();
+
+        editingTransaction = null;
+        await LoadIncome();
+        StateHasChanged();
+    }
+
+    private async Task DeleteIncome(int id)
+    {
+        var transaction = await Db.Transactions.FirstOrDefaultAsync(t => t.TransactionId == id);
+
+        if (transaction != null)
+        {
+            Db.Transactions.Remove(transaction);
+            await Db.SaveChangesAsync();
+
+            await LoadIncome();
+            StateHasChanged();
+        }
+    }
+}
