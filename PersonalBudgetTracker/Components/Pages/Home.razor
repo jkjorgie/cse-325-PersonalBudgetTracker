@@ -181,8 +181,9 @@
     private Dictionary<string, decimal> expensesByCategory = new();
     private List<Transaction> recentTransactions = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (!firstRender) return;
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var userId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userId is null) return;
@@ -224,5 +225,6 @@
             .ToListAsync();
 
         loaded = true;
+        StateHasChanged();
     }
 }
