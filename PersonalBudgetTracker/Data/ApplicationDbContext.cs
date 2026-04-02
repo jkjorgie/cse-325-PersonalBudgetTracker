@@ -14,12 +14,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         base.OnModelCreating(builder);
 
-        // Store enum as string for readability in the database
+        // store enum as string for readability in the database
         builder.Entity<Transaction>()
             .Property(t => t.Type)
             .HasConversion<string>();
 
-        // Each transaction belongs to a user; deleting a user removes their transactions
+        // each transaction belongs to a user; deleting a user removes their transactions
         builder.Entity<Transaction>()
             .HasOne(t => t.User)
             .WithMany(u => u.Transactions)

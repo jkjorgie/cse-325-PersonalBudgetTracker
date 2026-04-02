@@ -206,6 +206,7 @@
     private Transaction? editingTransaction = null;
     private string viewMode = "card";
 
+    // check screen width on first load to pick the right default view (table on desktop, cards on mobile)
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -234,6 +235,8 @@
             .ToListAsync();
     }
 
+    // called when the add expense form is submitted
+    // sets the type and user before saving to the db
     private async Task OnSubmitForm()
     {
         var authState = await AuthState.GetAuthenticationStateAsync();
@@ -251,6 +254,7 @@
         await LoadExpenses();
     }
 
+    // sets which transaction is being edited so the inline edit form shows up
     private void StartEdit(Transaction transaction)
     {
         editingTransaction = transaction;
@@ -262,6 +266,7 @@
         editingTransaction = null;
     }
 
+    // saves changes to the transaction and closes the edit form
     private async Task SaveEdit(Transaction transaction)
     {
         db.Transactions.Update(transaction);
@@ -272,6 +277,7 @@
         StateHasChanged();
     }
 
+    // find the transaction by id and remove it from the db
     private async Task DeleteExpense(int id)
     {
         var transaction = await db.Transactions.FirstOrDefaultAsync(t => t.TransactionId == id);

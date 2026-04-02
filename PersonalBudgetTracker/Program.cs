@@ -11,6 +11,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Identity
+// turned off strict password rules so testing is easier
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     options.Password.RequireDigit = false;
@@ -34,7 +35,7 @@ builder.Services.AddCascadingAuthenticationState();
 
 var app = builder.Build();
 
-// Apply migrations and create the database automatically on startup
+// runs any pending migrations when the app starts so we don't have to do it manually
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -61,6 +62,8 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 // Auth endpoints — must be real HTTP request/response to set/clear cookies
+// handles the login form, checks credentials and redirects
+// has to be a real HTTP endpoint (not Blazor) so the browser cookie gets set
 app.MapPost("/account/logout", async (SignInManager<ApplicationUser> signInManager) =>
 {
     await signInManager.SignOutAsync();
@@ -79,6 +82,8 @@ app.MapPost("/account/login-post", async (
     return Results.Redirect("/account/login?error=invalid");
 }).DisableAntiforgery();
 
+// creates a new user account and signs them in right away
+// sends error message back in the URL if something goes wrong
 app.MapPost("/account/register-post", async (
     UserManager<ApplicationUser> userManager,
     SignInManager<ApplicationUser> signInManager,

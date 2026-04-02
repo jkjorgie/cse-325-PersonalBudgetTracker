@@ -183,6 +183,7 @@
     private Dictionary<string, decimal> expensesByCategory = new();
     private List<Transaction> recentTransactions = new();
 
+    // wait until after first render to load data, otherwise auth state isn't ready yet
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender) return;
@@ -190,10 +191,12 @@
         var userId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userId is null) return;
 
+        // figure out the start and end of the current month for filtering
         var now = DateTime.Today;
         var monthStart = new DateTime(now.Year, now.Month, 1);
         var monthEnd = monthStart.AddMonths(1);
 
+        // get all of this user's transactions for the current month
         var monthTransactions = await Db.Transactions
             .Where(t => t.UserId == userId && t.Date >= monthStart && t.Date < monthEnd)
             .ToListAsync();
@@ -208,6 +211,7 @@
 
         net = totalIncome - totalExpenses;
 
+        // group transactions by category so we can show the breakdown
         incomeByCategory = monthTransactions
             .Where(t => t.Type == TransactionType.Income)
             .GroupBy(t => t.Category)
@@ -220,6 +224,7 @@
             .OrderByDescending(g => g.Sum(t => t.Amount))
             .ToDictionary(g => g.Key, g => g.Sum(t => t.Amount));
 
+        // grab the 8 most recent transactions for the list at the bottom
         recentTransactions = await Db.Transactions
             .Where(t => t.UserId == userId)
             .OrderByDescending(t => t.Date)

@@ -34,6 +34,7 @@
 </div>
 
 @code {
+    // error comes from the query string (?error=invalid) after a failed login
     [SupplyParameterFromQuery]
     private string? error { get; set; }
 }
