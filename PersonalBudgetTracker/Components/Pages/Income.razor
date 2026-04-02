@@ -85,7 +85,7 @@
                             <div class="card-body">
                                 <div class="mb-2">
                                     <label for="edit-cat-@item.TransactionId" class="form-label small fw-semibold">Category</label>
-                                    <InputSelect id="edit-cat-@item.TransactionId" @bind-Value="item.Category" class="form-select form-select-sm">
+                                    <InputSelect id="@($"edit-cat-{item.TransactionId}")" @bind-Value="item.Category" class="form-select form-select-sm">
                                         @foreach (var cat in IncomeCategories.All)
                                         {
                                             <option value="@cat">@cat</option>
@@ -94,15 +94,15 @@
                                 </div>
                                 <div class="mb-2">
                                     <label for="edit-amt-@item.TransactionId" class="form-label small fw-semibold">Amount</label>
-                                    <InputNumber id="edit-amt-@item.TransactionId" @bind-Value="item.Amount" class="form-control form-control-sm" />
+                                    <InputNumber id="@($"edit-amt-{item.TransactionId}")" @bind-Value="item.Amount" class="form-control form-control-sm" />
                                 </div>
                                 <div class="mb-2">
                                     <label for="edit-date-@item.TransactionId" class="form-label small fw-semibold">Date</label>
-                                    <InputDate id="edit-date-@item.TransactionId" @bind-Value="item.Date" class="form-control form-control-sm" />
+                                    <InputDate id="@($"edit-date-{item.TransactionId}")" @bind-Value="item.Date" class="form-control form-control-sm" />
                                 </div>
                                 <div class="mb-3">
                                     <label for="edit-desc-@item.TransactionId" class="form-label small fw-semibold">Description</label>
-                                    <InputText id="edit-desc-@item.TransactionId" @bind-Value="item.Description" class="form-control form-control-sm" />
+                                    <InputText id="@($"edit-desc-{item.TransactionId}")" @bind-Value="item.Description" class="form-control form-control-sm" />
                                 </div>
                                 <button class="btn btn-success btn-sm me-1" type="button" @onclick="() => SaveEdit(item)">Save</button>
                                 <button class="btn btn-secondary btn-sm" type="button" @onclick="CancelEdit">Cancel</button>
@@ -152,11 +152,11 @@
                             {
                                 <td>
                                     <label for="tbl-date-@item.TransactionId" class="visually-hidden">Date</label>
-                                    <InputDate id="tbl-date-@item.TransactionId" @bind-Value="item.Date" class="form-control form-control-sm" />
+                                    <InputDate id="@($"tbl-date-{item.TransactionId}")" @bind-Value="item.Date" class="form-control form-control-sm" />
                                 </td>
                                 <td>
                                     <label for="tbl-cat-@item.TransactionId" class="visually-hidden">Category</label>
-                                    <InputSelect id="tbl-cat-@item.TransactionId" @bind-Value="item.Category" class="form-select form-select-sm">
+                                    <InputSelect id="@($"tbl-cat-{item.TransactionId}")" @bind-Value="item.Category" class="form-select form-select-sm">
                                         @foreach (var cat in IncomeCategories.All)
                                         {
                                             <option value="@cat">@cat</option>
@@ -165,11 +165,11 @@
                                 </td>
                                 <td>
                                     <label for="tbl-amt-@item.TransactionId" class="visually-hidden">Amount</label>
-                                    <InputNumber id="tbl-amt-@item.TransactionId" @bind-Value="item.Amount" class="form-control form-control-sm" />
+                                    <InputNumber id="@($"tbl-amt-{item.TransactionId}")" @bind-Value="item.Amount" class="form-control form-control-sm" />
                                 </td>
                                 <td>
                                     <label for="tbl-desc-@item.TransactionId" class="visually-hidden">Description</label>
-                                    <InputText id="tbl-desc-@item.TransactionId" @bind-Value="item.Description" class="form-control form-control-sm" />
+                                    <InputText id="@($"tbl-desc-{item.TransactionId}")" @bind-Value="item.Description" class="form-control form-control-sm" />
                                 </td>
                                 <td>
                                     <button class="btn btn-success btn-sm me-1" type="button" @onclick="() => SaveEdit(item)">Save</button>
