@@ -36,7 +36,10 @@
 
                 <div class="mb-3">
                     <label class="form-label">Amount <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
                     <InputNumber @bind-Value="Input.Amount" class="form-control" />
+                    </div>
                     <ValidationMessage For="() => Input.Amount" />
                 </div>
 
@@ -209,6 +212,14 @@
         await LoadExpenses();
     }
 
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns> <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
     private async Task LoadExpenses()
     {
         var authState = await AuthState.GetAuthenticationStateAsync();

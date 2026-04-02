@@ -1,0 +1,17 @@
+.card {
+  border-top: 3px solid green;
+  background-color: #f0fff4;
+}
+
+.mt-4{
+  font-weight: bold;
+}
+
+.btn{
+  width: 100%;
+
+  &:hover{
+    background-color: blue;
+    cursor:pointer;
+  }
+}
