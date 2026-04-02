@@ -36,8 +36,11 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="income-amount" class="form-label">Amount <span class="text-danger">*</span></label>
-                    <InputNumber id="income-amount" @bind-Value="newTransaction.Amount" class="form-control" />
+                    <label class="form-label">Amount <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                    <InputNumber @bind-Value="newTransaction.Amount" class="form-control" />
+                    </div>
                     <ValidationMessage For="() => newTransaction.Amount" />
                 </div>
 
