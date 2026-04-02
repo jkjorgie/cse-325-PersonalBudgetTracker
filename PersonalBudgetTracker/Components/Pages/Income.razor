@@ -1,3 +1,5 @@
+@* income page *@
+
 @page "/income"
 @rendermode InteractiveServer
 @using PersonalBudgetTracker.Models
@@ -23,8 +25,8 @@
                 <ValidationSummary class="text-danger" />
 
                 <div class="mb-3">
-                    <label class="form-label">Category <span class="text-danger">*</span></label>
-                    <InputSelect @bind-Value="newTransaction.Category" class="form-select">
+                    <label for="income-category" class="form-label">Category <span class="text-danger">*</span></label>
+                    <InputSelect id="income-category" @bind-Value="newTransaction.Category" class="form-select">
                         @foreach (var cat in IncomeCategories.All)
                         {
                             <option value="@cat">@cat</option>
@@ -43,14 +45,14 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Date <span class="text-danger">*</span></label>
-                    <InputDate @bind-Value="newTransaction.Date" class="form-control" />
+                    <label for="income-date" class="form-label">Date <span class="text-danger">*</span></label>
+                    <InputDate id="income-date" @bind-Value="newTransaction.Date" class="form-control" />
                     <ValidationMessage For="() => newTransaction.Date" />
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Description</label>
-                    <InputText @bind-Value="newTransaction.Description" class="form-control" />
+                    <label for="income-description" class="form-label">Description</label>
+                    <InputText id="income-description" @bind-Value="newTransaction.Description" class="form-control" />
                 </div>
 
                 <button type="submit" class="btn btn-primary">Add Income</button>
@@ -59,8 +61,8 @@
     </div>
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4 class="mb-0">Your Income</h4>
-        <div class="btn-group btn-group-sm" role="group">
+        <h2 class="mb-0 fs-4">Your Income</h2>
+        <div class="btn-group btn-group-sm" role="group" aria-label="View mode">
             <button type="button" class="btn @(viewMode == "card" ? "btn-primary" : "btn-outline-primary")"
                     @onclick='() => viewMode = "card"'>
                 Cards
@@ -87,8 +89,8 @@
                         {
                             <div class="card-body">
                                 <div class="mb-2">
-                                    <label class="form-label small fw-semibold">Category</label>
-                                    <InputSelect @bind-Value="item.Category" class="form-select form-select-sm">
+                                    <label for="edit-cat-@item.TransactionId" class="form-label small fw-semibold">Category</label>
+                                    <InputSelect id="@($"edit-cat-{item.TransactionId}")" @bind-Value="item.Category" class="form-select form-select-sm">
                                         @foreach (var cat in IncomeCategories.All)
                                         {
                                             <option value="@cat">@cat</option>
@@ -96,16 +98,16 @@
                                     </InputSelect>
                                 </div>
                                 <div class="mb-2">
-                                    <label class="form-label small fw-semibold">Amount</label>
-                                    <InputNumber @bind-Value="item.Amount" class="form-control form-control-sm" />
+                                    <label for="edit-amt-@item.TransactionId" class="form-label small fw-semibold">Amount</label>
+                                    <InputNumber id="@($"edit-amt-{item.TransactionId}")" @bind-Value="item.Amount" class="form-control form-control-sm" />
                                 </div>
                                 <div class="mb-2">
-                                    <label class="form-label small fw-semibold">Date</label>
-                                    <InputDate @bind-Value="item.Date" class="form-control form-control-sm" />
+                                    <label for="edit-date-@item.TransactionId" class="form-label small fw-semibold">Date</label>
+                                    <InputDate id="@($"edit-date-{item.TransactionId}")" @bind-Value="item.Date" class="form-control form-control-sm" />
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label small fw-semibold">Description</label>
-                                    <InputText @bind-Value="item.Description" class="form-control form-control-sm" />
+                                    <label for="edit-desc-@item.TransactionId" class="form-label small fw-semibold">Description</label>
+                                    <InputText id="@($"edit-desc-{item.TransactionId}")" @bind-Value="item.Description" class="form-control form-control-sm" />
                                 </div>
                                 <button class="btn btn-success btn-sm me-1" type="button" @onclick="() => SaveEdit(item)">Save</button>
                                 <button class="btn btn-secondary btn-sm" type="button" @onclick="CancelEdit">Cancel</button>
@@ -140,11 +142,11 @@
             <table class="table table-hover align-middle">
                 <thead class="table-light">
                     <tr>
-                        <th>Date</th>
-                        <th>Category</th>
-                        <th>Amount</th>
-                        <th>Description</th>
-                        <th></th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Category</th>
+                        <th scope="col">Amount</th>
+                        <th scope="col">Description</th>
+                        <th scope="col"><span class="visually-hidden">Actions</span></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -153,17 +155,27 @@
                         <tr>
                             @if (editingTransaction?.TransactionId == item.TransactionId)
                             {
-                                <td><InputDate @bind-Value="item.Date" class="form-control form-control-sm" /></td>
                                 <td>
-                                    <InputSelect @bind-Value="item.Category" class="form-select form-select-sm">
+                                    <label for="tbl-date-@item.TransactionId" class="visually-hidden">Date</label>
+                                    <InputDate id="@($"tbl-date-{item.TransactionId}")" @bind-Value="item.Date" class="form-control form-control-sm" />
+                                </td>
+                                <td>
+                                    <label for="tbl-cat-@item.TransactionId" class="visually-hidden">Category</label>
+                                    <InputSelect id="@($"tbl-cat-{item.TransactionId}")" @bind-Value="item.Category" class="form-select form-select-sm">
                                         @foreach (var cat in IncomeCategories.All)
                                         {
                                             <option value="@cat">@cat</option>
                                         }
                                     </InputSelect>
                                 </td>
-                                <td><InputNumber @bind-Value="item.Amount" class="form-control form-control-sm" /></td>
-                                <td><InputText @bind-Value="item.Description" class="form-control form-control-sm" /></td>
+                                <td>
+                                    <label for="tbl-amt-@item.TransactionId" class="visually-hidden">Amount</label>
+                                    <InputNumber id="@($"tbl-amt-{item.TransactionId}")" @bind-Value="item.Amount" class="form-control form-control-sm" />
+                                </td>
+                                <td>
+                                    <label for="tbl-desc-@item.TransactionId" class="visually-hidden">Description</label>
+                                    <InputText id="@($"tbl-desc-{item.TransactionId}")" @bind-Value="item.Description" class="form-control form-control-sm" />
+                                </td>
                                 <td>
                                     <button class="btn btn-success btn-sm me-1" type="button" @onclick="() => SaveEdit(item)">Save</button>
                                     <button class="btn btn-secondary btn-sm" type="button" @onclick="CancelEdit">Cancel</button>
