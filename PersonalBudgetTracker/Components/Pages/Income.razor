@@ -55,7 +55,10 @@
                     <InputText id="income-description" @bind-Value="newTransaction.Description" class="form-control" />
                 </div>
 
-                <button type="submit" class="btn btn-primary">Add Income</button>
+                <div class="d-flex flex-column flex-sm-row gap-2">
+                    <button type="submit" class="btn btn-primary flex-grow-1">Add Income</button>
+                    <button type="button" class="btn btn-secondary flex-sm-grow-0" @onclick="ResetForm">Cancel</button>
+                </div>
             </EditForm>
         </div>
     </div>
@@ -126,8 +129,8 @@
                                     <p class="card-text small">@item.Description</p>
                                 }
                             </div>
-                            <div class="card-footer bg-transparent d-flex gap-2">
-                                <button class="btn btn-outline-primary btn-sm" type="button" @onclick="() => StartEdit(item)">Edit</button>
+                            <div class="card-footer bg-transparent">
+                                <button class="btn btn-outline-primary btn-sm me-2" type="button" @onclick="() => StartEdit(item)">Edit</button>
                                 <button class="btn btn-outline-danger btn-sm" type="button" @onclick="() => DeleteIncome(item.TransactionId)">Delete</button>
                             </div>
                         }
@@ -213,6 +216,16 @@
     private Transaction? editingTransaction = null;
     private string viewMode = "card";
 
+    private void ResetForm()
+    {
+        newTransaction = new()
+        {
+            Date = DateTime.Today,
+            Type = TransactionType.Income,
+            Category = IncomeCategories.All[0]
+        };
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -272,9 +285,10 @@
         StateHasChanged();
     }
 
-    private void CancelEdit()
+    private async Task CancelEdit()
     {
         editingTransaction = null;
+        await LoadIncome();
     }
 
     private async Task SaveEdit(Transaction transaction)

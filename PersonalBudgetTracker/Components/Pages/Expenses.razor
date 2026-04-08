@@ -57,7 +57,10 @@
                     <ValidationMessage For="() => Input.Description" />
                 </div>
 
-                <button type="submit" class="btn btn-primary">Enter Expense</button>
+                <div class="d-flex flex-column flex-sm-row gap-2">
+                    <button type="submit" class="btn btn-primary flex-grow-1">Enter Expense</button>
+                    <button type="button" class="btn btn-secondary flex-sm-grow-0" @onclick="ResetForm">Cancel</button>
+                </div>
             </EditForm>
         </div>
     </div>
@@ -128,8 +131,8 @@
                                     <p class="card-text small">@item.Description</p>
                                 }
                             </div>
-                            <div class="card-footer bg-transparent d-flex gap-2">
-                                <button class="btn btn-outline-primary btn-sm" type="button" @onclick="() => StartEdit(item)">Edit</button>
+                            <div class="card-footer bg-transparent">
+                                <button class="btn btn-outline-primary btn-sm me-2" type="button" @onclick="() => StartEdit(item)">Edit</button>
                                 <button class="btn btn-outline-danger btn-sm" type="button" @onclick="() => DeleteExpense(item.TransactionId)">Delete</button>
                             </div>
                         }
@@ -209,6 +212,11 @@
     private Transaction? editingTransaction = null;
     private string viewMode = "card";
 
+    private void ResetForm()
+    {
+        Input = new() { Date = DateTime.Today };
+    }
+
     // check screen width on first load to pick the right default view (table on desktop, cards on mobile)
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -272,9 +280,10 @@
         StateHasChanged();
     }
 
-    private void CancelEdit()
+    private async Task CancelEdit()
     {
         editingTransaction = null;
+        await LoadExpenses();
     }
 
     // saves changes to the transaction and closes the edit form

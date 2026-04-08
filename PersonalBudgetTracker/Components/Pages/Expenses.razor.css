@@ -1,39 +1,8 @@
-.container-fluid {
-
-}
-.mt-4{
-  justify-self: center;
-}
-
-.text-muted {
-  color: #6c757d;
-  justify-self: center;
-}
-
-.mb-3 {
-  margin-bottom: 2rem !important;
-}
-
-label{
-
-  margin-bottom: 2px;
-}
 .card {
-  width: 600px;
-  background-color: #fff5f5;
-  justify-self: center;
-
+  border-top: 3px solid red;
+  background-color: #fff;
 }
 
-.mt-4 {
+.mt-4{
   font-weight: bold;
-}
-
-.btn {
-  width: 100%;
-
-  &:hover {
-    background-color: blue;
-    cursor: pointer;
-  }
 }
